@@ -216,10 +216,10 @@ class UpscaleViewModel : ViewModel() {
         }
     }
 
-    private fun writeWithProgress(
+    private suspend fun writeWithProgress(
         bytes: ByteArray,
         output: java.io.OutputStream,
-        onProgress: (Float, Long) -> Unit,
+        onProgress: suspend (Float, Long) -> Unit,
     ) {
         val chunkSize = 8192
         var offset = 0
