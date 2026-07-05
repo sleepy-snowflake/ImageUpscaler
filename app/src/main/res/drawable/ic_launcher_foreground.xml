@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Outer ring -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,12 C30.8,12 12,30.8 12,54 C12,77.2 30.8,96 54,96 C77.2,96 96,77.2 96,54 C96,30.8 77.2,12 54,12 Z M54,88 C35.2,88 20,72.8 20,54 C20,35.2 35.2,20 54,20 C72.8,20 88,35.2 88,54 C88,72.8 72.8,88 54,88 Z" />
+
+    <!-- Center square (image representation) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M42,46 L66,46 L66,62 L42,62 Z" />
+
+    <!-- Up-left arrow -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M38,34 L44,34 L44,38 L38,38 L38,44 L34,44 L34,34 Z" />
+
+    <!-- Up-right arrow -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M70,34 L70,44 L66,44 L66,38 L60,38 L60,34 Z" />
+
+    <!-- Down-left arrow -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M38,64 L44,64 L44,70 L38,70 L38,76 L34,76 L34,64 Z" />
+
+    <!-- Down-right arrow -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M70,64 L70,76 L66,76 L66,70 L60,70 L60,64 Z" />
+</vector>
