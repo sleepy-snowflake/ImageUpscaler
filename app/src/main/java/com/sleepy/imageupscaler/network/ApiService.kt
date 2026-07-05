@@ -1,6 +1,7 @@
 package com.sleepy.imageupscaler.network
 
 import okhttp3.FormBody
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request

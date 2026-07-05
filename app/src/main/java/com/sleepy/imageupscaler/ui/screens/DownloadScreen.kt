@@ -98,9 +98,10 @@ fun DownloadScreen(
                 .background(Color(0xFF121212)),
             contentAlignment = Alignment.Center,
         ) {
-            if (bitmap != null) {
+            val bmp = bitmap.value
+            if (bmp != null) {
                 androidx.compose.foundation.Image(
-                    bitmap = bitmap.asImageBitmap(),
+                    bitmap = bmp.asImageBitmap(),
                     contentDescription = "Upscaled image",
                     modifier = Modifier
                         .fillMaxSize()
