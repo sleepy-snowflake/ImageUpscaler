@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "ImageUpscaler"
+rootProject.name = "Upscale"
 include(":app")

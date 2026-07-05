@@ -1,4 +1,4 @@
-package com.sleepy.imageupscaler
+package com.sleepy.upscale
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -25,17 +25,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sleepy.imageupscaler.ui.screens.DownloadScreen
-import com.sleepy.imageupscaler.ui.screens.ProcessingScreen
-import com.sleepy.imageupscaler.ui.screens.UploadScreen
-import com.sleepy.imageupscaler.ui.theme.ImageUpscalerTheme
-import com.sleepy.imageupscaler.viewmodel.UpscaleViewModel
+import com.sleepy.upscale.ui.screens.DownloadScreen
+import com.sleepy.upscale.ui.screens.ProcessingScreen
+import com.sleepy.upscale.ui.screens.UploadScreen
+import com.sleepy.upscale.ui.theme.UpscaleTheme
+import com.sleepy.upscale.viewmodel.UpscaleViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ImageUpscalerTheme {
+            UpscaleTheme {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()

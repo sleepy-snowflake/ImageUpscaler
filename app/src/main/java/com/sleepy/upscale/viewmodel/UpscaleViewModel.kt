@@ -1,4 +1,4 @@
-package com.sleepy.imageupscaler.viewmodel
+package com.sleepy.upscale.viewmodel
 
 import android.content.ContentValues
 import android.content.Context
@@ -8,8 +8,8 @@ import android.os.Environment
 import android.provider.MediaStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sleepy.imageupscaler.UpscaleState
-import com.sleepy.imageupscaler.network.ApiService
+import com.sleepy.upscale.UpscaleState
+import com.sleepy.upscale.network.ApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow

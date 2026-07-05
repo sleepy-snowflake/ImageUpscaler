@@ -1,4 +1,4 @@
-package com.sleepy.imageupscaler.ui.theme
+package com.sleepy.upscale.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -20,7 +20,7 @@ private val BlackAndWhiteScheme = darkColorScheme(
 )
 
 @Composable
-fun ImageUpscalerTheme(content: @Composable () -> Unit) {
+fun UpscaleTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = BlackAndWhiteScheme,
         content = content,

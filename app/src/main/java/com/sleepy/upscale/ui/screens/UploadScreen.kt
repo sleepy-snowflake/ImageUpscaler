@@ -1,4 +1,4 @@
-package com.sleepy.imageupscaler.ui.screens
+package com.sleepy.upscale.ui.screens
 
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
@@ -55,7 +55,7 @@ fun UploadScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Image Upscaler",
+            text = "Upscale",
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontWeight = FontWeight.Light,
                 letterSpacing = (-0.5).sp,

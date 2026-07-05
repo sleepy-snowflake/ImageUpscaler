@@ -1,4 +1,4 @@
-package com.sleepy.imageupscaler.network
+package com.sleepy.upscale.network
 
 import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaType

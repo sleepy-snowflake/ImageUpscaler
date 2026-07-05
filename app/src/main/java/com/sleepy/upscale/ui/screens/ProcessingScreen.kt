@@ -1,4 +1,4 @@
-package com.sleepy.imageupscaler.ui.screens
+package com.sleepy.upscale.ui.screens
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode

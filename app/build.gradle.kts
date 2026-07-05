@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.sleepy.imageupscaler"
+    namespace = "com.sleepy.upscale"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.sleepy.imageupscaler"
+        applicationId = "com.sleepy.upscale"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

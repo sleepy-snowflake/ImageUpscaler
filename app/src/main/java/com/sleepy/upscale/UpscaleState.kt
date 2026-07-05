@@ -1,4 +1,4 @@
-package com.sleepy.imageupscaler
+package com.sleepy.upscale
 
 import android.net.Uri
 
