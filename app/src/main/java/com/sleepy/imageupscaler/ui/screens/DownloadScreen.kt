@@ -98,7 +98,7 @@ fun DownloadScreen(
                 .background(Color(0xFF121212)),
             contentAlignment = Alignment.Center,
         ) {
-            val bmp = bitmap.value
+            val bmp = bitmap
             if (bmp != null) {
                 androidx.compose.foundation.Image(
                     bitmap = bmp.asImageBitmap(),
