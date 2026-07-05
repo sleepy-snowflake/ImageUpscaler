@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="48dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-light"
+        android:letterSpacing="-0.02"
+        android:text="Upscaling"
+        android:textColor="@color/text_primary"
+        android:textSize="34sp" />
+
+    <com.xuexiang.xui.widget.progress.loading.XUILoadingView
+        android:id="@+id/loadingView"
+        android:layout_width="?attr/xui_loading_view_size"
+        android:layout_height="?attr/xui_loading_view_size"
+        android:layout_marginTop="48dp"
+        app:xui_loading_view_color="@color/text_primary" />
+
+    <TextView
+        android:id="@+id/stageText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:textColor="@color/text_secondary"
+        android:textSize="15sp" />
+
+    <com.xuexiang.xui.widget.progress.HorizontalProgressView
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:xui_hpv_progress_color="@color/text_primary"
+        app:xui_hpv_track_color="@color/surface_elevated" />
+
+</LinearLayout>

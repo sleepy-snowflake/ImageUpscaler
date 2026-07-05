@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Upscale" parent="android:Theme.Material.NoActionBar">
+    <style name="Theme.Upscale" parent="XUITheme.Phone">
         <item name="android:statusBarColor">@android:color/black</item>
         <item name="android:navigationBarColor">@android:color/black</item>
-        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:windowBackground">@color/background</item>
+
+        <item name="xui_config_color_background">@color/background</item>
+        <item name="xui_config_color_title_text">@color/text_primary</item>
+        <item name="xui_config_color_content_text">@color/text_secondary</item>
+        <item name="xui_config_color_explain_text">@color/text_caption</item>
+        <item name="xui_config_color_separator_light">@color/divider</item>
+        <item name="xui_config_color_separator_dark">@color/card_border</item>
+        <item name="xui_config_color_main_theme">@color/button_bg</item>
+
+        <item name="xui_actionbar_color">@color/background</item>
+        <item name="xui_actionbar_text_color">@color/text_primary</item>
+        <item name="xui_btn_view_radius">12dp</item>
+        <item name="xui_btn_view_height">52dp</item>
+        <item name="xui_loading_view_size">48dp</item>
+        <item name="xui_loading_view_width">3dp</item>
     </style>
 </resources>

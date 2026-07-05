@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#000000</color>
+    <color name="surface">#121212</color>
+    <color name="surface_elevated">#1E1E1E</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#9E9E9E</color>
+    <color name="text_caption">#666666</color>
+    <color name="accent">#64FFDA</color>
+    <color name="accent_dim">#1A64FFDA</color>
+    <color name="button_bg">#FFFFFF</color>
+    <color name="button_text">#000000</color>
+    <color name="scale_selected_bg">#FFFFFF</color>
+    <color name="scale_selected_text">#000000</color>
+    <color name="scale_unselected_bg">#1A1A1A</color>
+    <color name="scale_unselected_text">#FFFFFF</color>
+    <color name="card_border">#2A2A2A</color>
+    <color name="divider">#1A1A1A</color>
+</resources>

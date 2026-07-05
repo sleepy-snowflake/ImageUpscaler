@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="sans-serif-light"
+        android:letterSpacing="-0.02"
+        android:text="@string/app_name"
+        android:textColor="@color/text_primary"
+        android:textSize="34sp" />
+
+    <TextView
+        android:id="@+id/subtitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Upscale your images 2x or 4x"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp" />
+
+    <FrameLayout
+        android:id="@+id/imageContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="28dp"
+        android:layout_weight="1"
+        android:minHeight="240dp">
+
+        <com.xuexiang.xui.widget.imageview.RadiusImageView
+            android:id="@+id/imagePreview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/surface"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:riv_radius="16dp" />
+
+        <TextView
+            android:id="@+id/imagePlaceholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/upload_placeholder_bg"
+            android:gravity="center"
+            android:text="+"
+            android:textColor="@color/text_caption"
+            android:textSize="48sp" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/fileInfoGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/imageNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/imageSizeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/text_caption"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <com.xuexiang.xui.widget.button.roundbutton.RoundButton
+            android:id="@+id/scale2x"
+            android:layout_width="0dp"
+            android:layout_height="?attr/xui_btn_view_height"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:text="2x"
+            android:textSize="16sp"
+            app:rb_backgroundColor="@color/scale_selected_bg"
+            app:rb_radius="12dp"
+            app:rb_textColor="@color/scale_selected_text" />
+
+        <com.xuexiang.xui.widget.button.roundbutton.RoundButton
+            android:id="@+id/scale4x"
+            android:layout_width="0dp"
+            android:layout_height="?attr/xui_btn_view_height"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:text="4x"
+            android:textSize="16sp"
+            app:rb_backgroundColor="@color/scale_unselected_bg"
+            app:rb_radius="12dp"
+            app:rb_textColor="@color/scale_unselected_text" />
+
+    </LinearLayout>
+
+    <com.xuexiang.xui.widget.button.roundbutton.RoundButton
+        android:id="@+id/upscaleButton"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/xui_btn_view_height"
+        android:layout_marginTop="16dp"
+        android:enabled="false"
+        android:text="Upscale"
+        android:textSize="16sp"
+        app:rb_backgroundColor="@color/button_bg"
+        app:rb_backgroundColorDisable="@color/surface_elevated"
+        app:rb_radius="12dp"
+        app:rb_textColor="@color/button_text"
+        app:rb_textColorDisable="@color/text_caption" />
+
+</LinearLayout>
