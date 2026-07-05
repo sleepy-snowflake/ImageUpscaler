@@ -15,7 +15,7 @@
         android:fontFamily="sans-serif-light"
         android:letterSpacing="-0.02"
         android:text="Done"
-        android:textColor="@color/text_primary"
+        android:textColor="@color/tokyo_text_bright"
         android:textSize="34sp" />
 
     <TextView
@@ -23,25 +23,28 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="Your upscaled image is ready"
-        android:textColor="@color/text_secondary"
+        android:textColor="@color/tokyo_text_muted"
         android:textSize="14sp" />
 
-    <FrameLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="28dp"
         android:layout_weight="1"
-        android:minHeight="240dp">
+        android:minHeight="240dp"
+        app:cardBackgroundColor="@color/tokyo_surface"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/tokyo_border"
+        app:strokeWidth="1dp">
 
-        <com.xuexiang.xui.widget.imageview.RadiusImageView
+        <ImageView
             android:id="@+id/resultPreview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/surface"
-            android:scaleType="fitCenter"
-            app:riv_radius="16dp" />
+            android:scaleType="fitCenter" />
 
-    </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <LinearLayout
         android:id="@+id/downloadFileInfo"
@@ -58,7 +61,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/text_secondary"
+            android:textColor="@color/tokyo_text"
             android:textSize="13sp" />
 
         <TextView
@@ -66,102 +69,93 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:textColor="@color/text_caption"
+            android:textColor="@color/tokyo_text_muted"
             android:textSize="12sp" />
 
     </LinearLayout>
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/downloadProgressGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
+        android:orientation="vertical"
         android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_weight="1"
+                android:text="Downloading..."
+                android:textColor="@color/tokyo_text_muted"
+                android:textSize="13sp" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Downloading..."
-                    android:textColor="@color/text_secondary"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/downloadPercentText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_primary"
-                    android:textSize="13sp" />
-
-            </LinearLayout>
-
-            <com.xuexiang.xui.widget.progress.HorizontalProgressView
-                android:id="@+id/downloadProgressBar"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/downloadPercentText"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:xui_hpv_progress_color="@color/text_primary"
-                app:xui_hpv_track_color="@color/surface_elevated" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/downloadBytesText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textColor="@color/text_caption"
-                    android:textSize="11sp" />
-
-                <TextView
-                    android:id="@+id/downloadTotalText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_caption"
-                    android:textSize="11sp" />
-
-            </LinearLayout>
+                android:textColor="@color/tokyo_text_bright"
+                android:textSize="13sp" />
 
         </LinearLayout>
 
-    </FrameLayout>
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/downloadProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:indeterminate="false"
+            app:indicatorColor="@color/tokyo_primary"
+            app:trackColor="@color/tokyo_surface_elevated"
+            app:trackThickness="3dp" />
 
-    <com.xuexiang.xui.widget.button.roundbutton.RoundButton
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/downloadBytesText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/tokyo_text_muted"
+                android:textSize="11sp" />
+
+            <TextView
+                android:id="@+id/downloadTotalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/tokyo_text_muted"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/saveButton"
+        style="@style/Widget.Upscale.Button"
         android:layout_width="match_parent"
-        android:layout_height="?attr/xui_btn_view_height"
+        android:layout_height="52dp"
         android:layout_marginTop="16dp"
-        android:text="Save to Downloads"
-        android:textSize="16sp"
-        app:rb_backgroundColor="@color/button_bg"
-        app:rb_radius="12dp"
-        app:rb_textColor="@color/button_text" />
+        android:text="Save to Downloads" />
 
-    <com.xuexiang.xui.widget.button.roundbutton.RoundButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/clearButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
-        android:layout_height="?attr/xui_btn_view_height"
-        android:layout_marginTop="12dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="4dp"
         android:text="Clear"
-        android:textSize="16sp"
-        app:rb_backgroundColor="@color/surface_elevated"
-        app:rb_radius="12dp"
-        app:rb_textColor="@color/text_primary" />
+        android:textColor="@color/tokyo_text_muted" />
 
 </LinearLayout>

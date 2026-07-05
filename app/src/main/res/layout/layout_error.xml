@@ -8,12 +8,11 @@
     android:padding="48dp">
 
     <TextView
-        android:id="@+id/errorTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-light"
         android:text="Something went wrong"
-        android:textColor="@color/text_primary"
+        android:textColor="@color/tokyo_text_bright"
         android:textSize="24sp" />
 
     <TextView
@@ -22,18 +21,15 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:gravity="center"
-        android:textColor="@color/text_secondary"
+        android:textColor="@color/tokyo_text_muted"
         android:textSize="14sp" />
 
-    <com.xuexiang.xui.widget.button.roundbutton.RoundButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/retryButton"
+        style="@style/Widget.Upscale.Button"
         android:layout_width="match_parent"
-        android:layout_height="?attr/xui_btn_view_height"
+        android:layout_height="52dp"
         android:layout_marginTop="32dp"
-        android:text="Try Again"
-        android:textSize="16sp"
-        app:rb_backgroundColor="@color/button_bg"
-        app:rb_radius="12dp"
-        app:rb_textColor="@color/button_text" />
+        android:text="Try Again" />
 
 </LinearLayout>
