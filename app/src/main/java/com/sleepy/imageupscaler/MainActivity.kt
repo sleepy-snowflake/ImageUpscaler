@@ -16,11 +16,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,36 +53,27 @@ fun AppContent(viewModel: UpscaleViewModel = viewModel()) {
     val state by viewModel.state.collectAsState()
     val selectedScale by viewModel.selectedScale.collectAsState()
     val context = LocalContext.current
-    var imageUri by remember { mutableStateOf<android.net.Uri?>(null) }
-    var imageName by remember { mutableStateOf<String?>(null) }
-    var imageSize by remember { mutableStateOf<Long?>(null) }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
     ) { uri ->
         uri?.let {
-            imageUri = it
-            viewModel.onImageSelected(context, it) { name, size ->
-                imageName = name
-                imageSize = size
-            }
+            viewModel.onImageSelected(context, it) { _, _ -> }
         }
     }
 
-    val crossfadeTarget by remember { derivedStateOf { state::class } }
-
     Crossfade(
-        targetState = crossfadeTarget,
+        targetState = state::class,
         animationSpec = tween(400),
     ) {
-        when (state) {
+        when (val s = state) {
             is UpscaleState.Idle, is UpscaleState.ImageSelected -> {
-                val s = state as? UpscaleState.ImageSelected
+                val selected = s as? UpscaleState.ImageSelected
                 UploadScreen(
-                    imageUri = s?.uri ?: imageUri,
+                    imageUri = selected?.uri,
                     selectedScale = selectedScale,
-                    imageName = s?.fileName ?: imageName,
-                    imageSize = s?.fileSize ?: imageSize,
+                    imageName = selected?.fileName,
+                    imageSize = selected?.fileSize,
                     onPickImage = { imagePickerLauncher.launch("image/*") },
                     onSelectScale = { viewModel.setScale(it) },
                     onUpscale = { viewModel.startUpscale(context) },
@@ -93,14 +81,10 @@ fun AppContent(viewModel: UpscaleViewModel = viewModel()) {
             }
 
             is UpscaleState.Processing -> {
-                ProcessingScreen(
-                    stage = (state as UpscaleState.Processing).stage,
-                    progress = (state as UpscaleState.Processing).progress,
-                )
+                ProcessingScreen(stage = s.stage, progress = s.progress)
             }
 
             is UpscaleState.Completed -> {
-                val s = state as UpscaleState.Completed
                 DownloadScreen(
                     imageBytes = s.imageBytes,
                     fileName = s.fileName,
@@ -109,37 +93,21 @@ fun AppContent(viewModel: UpscaleViewModel = viewModel()) {
                     isDownloading = false,
                     bytesDownloaded = 0L,
                     onDownload = { viewModel.downloadFile(context) },
-                    onClear = {
-                        imageUri = null
-                        imageName = null
-                        imageSize = null
-                        viewModel.clear()
-                    },
+                    onClear = { viewModel.clear() },
                 )
             }
 
             is UpscaleState.Downloading -> {
-                val s = state as UpscaleState.Downloading
-                val bytes = viewModel.lastImageBytes
-                if (bytes == null) {
-                    ProcessingScreen(stage = "Downloading...", progress = 0f)
-                } else {
-                    DownloadScreen(
-                        imageBytes = bytes,
-                        fileName = viewModel.lastFileName ?: "image.jpg",
-                        fileSize = s.totalBytes,
-                        downloadProgress = s.progress,
-                        isDownloading = true,
-                        bytesDownloaded = s.bytesDownloaded,
-                        onDownload = {},
-                        onClear = {
-                            imageUri = null
-                            imageName = null
-                            imageSize = null
-                            viewModel.clear()
-                        },
-                    )
-                }
+                DownloadScreen(
+                    imageBytes = s.imageBytes,
+                    fileName = s.fileName,
+                    fileSize = s.totalBytes,
+                    downloadProgress = s.progress,
+                    isDownloading = true,
+                    bytesDownloaded = s.bytesDownloaded,
+                    onDownload = {},
+                    onClear = { viewModel.clear() },
+                )
             }
 
             is UpscaleState.Error -> {
@@ -151,17 +119,12 @@ fun AppContent(viewModel: UpscaleViewModel = viewModel()) {
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = (state as UpscaleState.Error).message,
+                            text = s.message,
                             color = Color.White,
                             textAlign = TextAlign.Center,
                         )
                         Button(
-                            onClick = {
-                                imageUri = null
-                                imageName = null
-                                imageSize = null
-                                viewModel.clear()
-                            },
+                            onClick = { viewModel.clear() },
                             modifier = Modifier.padding(top = 24.dp),
                         ) {
                             Text("Try Again")

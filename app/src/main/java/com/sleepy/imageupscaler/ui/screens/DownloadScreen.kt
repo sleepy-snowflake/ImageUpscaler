@@ -1,6 +1,5 @@
 package com.sleepy.imageupscaler.ui.screens
 
-import android.graphics.BitmapFactory
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -22,20 +21,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import coil.compose.AsyncImage
 
 @Composable
 fun DownloadScreen(
@@ -53,16 +49,6 @@ fun DownloadScreen(
         targetValue = downloadProgress,
         animationSpec = tween(300),
     )
-
-    val bitmap by produceState<android.graphics.Bitmap?>(initialValue = null, key1 = imageBytes) {
-        value = withContext(Dispatchers.Default) {
-            try {
-                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-            } catch (_: Exception) {
-                null
-            }
-        }
-    }
 
     Column(
         modifier = modifier
@@ -98,22 +84,14 @@ fun DownloadScreen(
                 .background(Color(0xFF121212)),
             contentAlignment = Alignment.Center,
         ) {
-            val bmp = bitmap
-            if (bmp != null) {
-                androidx.compose.foundation.Image(
-                    bitmap = bmp.asImageBitmap(),
-                    contentDescription = "Upscaled image",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(16.dp)),
-                    contentScale = ContentScale.Fit,
-                )
-            } else {
-                Text(
-                    text = "Preview unavailable",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+            AsyncImage(
+                model = imageBytes,
+                contentDescription = "Upscaled image",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.Fit,
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -210,22 +188,24 @@ fun DownloadScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Button(
-            onClick = onClear,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF1A1A1A),
-                contentColor = Color.White,
-            ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
-        ) {
-            Text(
-                text = "Clear",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
-            )
+        if (!isDownloading) {
+            Button(
+                onClick = onClear,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF1A1A1A),
+                    contentColor = Color.White,
+                ),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
+            ) {
+                Text(
+                    text = "Clear",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
+                )
+            }
         }
     }
 }

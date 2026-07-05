@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.sleepy.imageupscaler.UpscaleState
 import com.sleepy.imageupscaler.network.ApiService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,13 +27,8 @@ class UpscaleViewModel : ViewModel() {
     private val _selectedScale = MutableStateFlow(2)
     val selectedScale: StateFlow<Int> = _selectedScale.asStateFlow()
 
-    var lastImageBytes: ByteArray? = null
-        private set
-    var lastFileName: String? = null
-        private set
-
-    private var cachedImageBytes: ByteArray? = null
-    private var isDownloading = false
+    private var upscaleJob: Job? = null
+    private var downloadJob: Job? = null
 
     fun setScale(scale: Int) {
         _selectedScale.value = scale
@@ -45,10 +41,14 @@ class UpscaleViewModel : ViewModel() {
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                val mimeType = context.contentResolver.getType(uri)
+                if (mimeType?.startsWith("image/") != true) {
+                    throw Exception("Please select an image file")
+                }
+
                 val fileName = getFileName(context, uri) ?: "image.jpg"
                 val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
                     ?: throw Exception("Could not read image")
-                cachedImageBytes = bytes
 
                 withContext(Dispatchers.Main) {
                     _state.value = UpscaleState.ImageSelected(
@@ -60,7 +60,7 @@ class UpscaleViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    _state.value = UpscaleState.Error("Failed to load image: ${e.message}")
+                    _state.value = UpscaleState.Error("${e.message}")
                 }
             }
         }
@@ -70,7 +70,8 @@ class UpscaleViewModel : ViewModel() {
         val currentState = _state.value
         if (currentState !is UpscaleState.ImageSelected) return
 
-        viewModelScope.launch(Dispatchers.IO) {
+        upscaleJob?.cancel()
+        upscaleJob = viewModelScope.launch(Dispatchers.IO) {
             try {
                 withContext(Dispatchers.Main) {
                     _state.value = UpscaleState.Processing("Getting configuration...", 0f)
@@ -82,9 +83,9 @@ class UpscaleViewModel : ViewModel() {
                     _state.value = UpscaleState.Processing("Uploading image...", 0.3f)
                 }
 
-                val imageBytes = cachedImageBytes
-                    ?: (context.contentResolver.openInputStream(currentState.uri)?.use { it.readBytes() }
-                        ?: throw Exception("Could not read image"))
+                val imageBytes = context.contentResolver.openInputStream(currentState.uri)
+                    ?.use { it.readBytes() }
+                    ?: throw Exception("Could not read image")
 
                 val serverFilename = ApiService.uploadImage(config, imageBytes, currentState.fileName)
 
@@ -115,9 +116,6 @@ class UpscaleViewModel : ViewModel() {
 
                 val outputName = "upscaled_${_selectedScale.value}x_${currentState.fileName}"
 
-                lastImageBytes = resultBytes
-                lastFileName = outputName
-
                 withContext(Dispatchers.Main) {
                     _state.value = UpscaleState.Completed(
                         imageBytes = resultBytes,
@@ -134,16 +132,23 @@ class UpscaleViewModel : ViewModel() {
     }
 
     fun downloadFile(context: Context) {
-        if (isDownloading) return
-        isDownloading = true
+        val currentState = _state.value
+        if (currentState !is UpscaleState.Completed) return
 
-        val bytes = lastImageBytes ?: run { isDownloading = false; return }
-        val name = lastFileName ?: run { isDownloading = false; return }
+        val bytes = currentState.imageBytes
+        val name = currentState.fileName
 
-        viewModelScope.launch(Dispatchers.IO) {
+        downloadJob?.cancel()
+        downloadJob = viewModelScope.launch(Dispatchers.IO) {
             try {
                 withContext(Dispatchers.Main) {
-                    _state.value = UpscaleState.Downloading(0f, 0L, bytes.size.toLong())
+                    _state.value = UpscaleState.Downloading(
+                        imageBytes = bytes,
+                        fileName = name,
+                        progress = 0f,
+                        bytesDownloaded = 0L,
+                        totalBytes = bytes.size.toLong(),
+                    )
                 }
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -159,7 +164,17 @@ class UpscaleViewModel : ViewModel() {
                     ) ?: throw Exception("Could not create file")
 
                     context.contentResolver.openOutputStream(uri)?.use { output ->
-                        writeWithProgress(bytes, output)
+                        writeWithProgress(bytes, output) { progress, downloaded ->
+                            withContext(Dispatchers.Main) {
+                                _state.value = UpscaleState.Downloading(
+                                    imageBytes = bytes,
+                                    fileName = name,
+                                    progress = progress,
+                                    bytesDownloaded = downloaded,
+                                    totalBytes = bytes.size.toLong(),
+                                )
+                            }
+                        }
                     }
 
                     contentValues.clear()
@@ -172,7 +187,17 @@ class UpscaleViewModel : ViewModel() {
                     )
                     val file = File(downloadsDir, name)
                     FileOutputStream(file).use { output ->
-                        writeWithProgress(bytes, output)
+                        writeWithProgress(bytes, output) { progress, downloaded ->
+                            withContext(Dispatchers.Main) {
+                                _state.value = UpscaleState.Downloading(
+                                    imageBytes = bytes,
+                                    fileName = name,
+                                    progress = progress,
+                                    bytesDownloaded = downloaded,
+                                    totalBytes = bytes.size.toLong(),
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -187,13 +212,15 @@ class UpscaleViewModel : ViewModel() {
                 withContext(Dispatchers.Main) {
                     _state.value = UpscaleState.Error("Download failed: ${e.message}")
                 }
-            } finally {
-                isDownloading = false
             }
         }
     }
 
-    private fun writeWithProgress(bytes: ByteArray, output: java.io.OutputStream) {
+    private fun writeWithProgress(
+        bytes: ByteArray,
+        output: java.io.OutputStream,
+        onProgress: (Float, Long) -> Unit,
+    ) {
         val chunkSize = 8192
         var offset = 0
         var lastProgressUpdate = 0L
@@ -204,21 +231,14 @@ class UpscaleViewModel : ViewModel() {
             val now = System.currentTimeMillis()
             if (now - lastProgressUpdate > 100) {
                 lastProgressUpdate = now
-                val progress = offset.toFloat() / bytes.size.toFloat()
-                _state.value = UpscaleState.Downloading(
-                    progress = progress,
-                    bytesDownloaded = offset.toLong(),
-                    totalBytes = bytes.size.toLong(),
-                )
+                onProgress(offset.toFloat() / bytes.size.toFloat(), offset.toLong())
             }
         }
     }
 
     fun clear() {
-        cachedImageBytes = null
-        lastImageBytes = null
-        lastFileName = null
-        isDownloading = false
+        upscaleJob?.cancel()
+        downloadJob?.cancel()
         _selectedScale.value = 2
         _state.value = UpscaleState.Idle
     }

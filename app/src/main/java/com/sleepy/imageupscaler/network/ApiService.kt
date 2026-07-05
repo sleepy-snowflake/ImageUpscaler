@@ -26,6 +26,13 @@ object ApiService {
 
     private const val UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36"
 
+    private val configPattern = Pattern.compile(
+        "ilovepdfConfig\\s*=\\s*(\\{.*?\\});", Pattern.DOTALL
+    )
+    private val taskPattern = Pattern.compile(
+        "ilovepdfConfig\\.taskId\\s*=\\s*['\"]([^'\"]+)['\"]"
+    )
+
     fun getConfig(): UpscaleConfig {
         val request = Request.Builder()
             .url("https://www.iloveimg.com/upscale-image")
@@ -39,7 +46,6 @@ object ApiService {
             }
             val html = resp.body?.string() ?: throw IOException("Failed to fetch config page")
 
-            val configPattern = Pattern.compile("ilovepdfConfig\\s*=\\s*(\\{.*?\\});", Pattern.DOTALL)
             val configMatcher = configPattern.matcher(html)
             if (!configMatcher.find()) throw IOException("Could not find config in page")
             val json = JSONObject(configMatcher.group(1)!!)
@@ -47,7 +53,6 @@ object ApiService {
             val token = json.getString("token")
             val server = json.getJSONArray("servers").getString(0)!!
 
-            val taskPattern = Pattern.compile("ilovepdfConfig\\.taskId\\s*=\\s*['\"]([^'\"]+)['\"]")
             val taskMatcher = taskPattern.matcher(html)
             if (!taskMatcher.find()) throw IOException("Could not find taskId")
             val taskId = taskMatcher.group(1)!!

@@ -127,14 +127,12 @@ fun UploadScreen(
                 modifier = Modifier.padding(top = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                if (imageName != null) {
-                    Text(
-                        text = imageName,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                    )
-                }
+                Text(
+                    text = imageName ?: "",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                )
                 if (imageSize != null) {
                     Text(
                         text = formatFileSize(imageSize),
