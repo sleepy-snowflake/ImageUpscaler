@@ -42,15 +42,15 @@ object ApiService {
             val configPattern = Pattern.compile("ilovepdfConfig\\s*=\\s*(\\{.*?\\});", Pattern.DOTALL)
             val configMatcher = configPattern.matcher(html)
             if (!configMatcher.find()) throw IOException("Could not find config in page")
-            val json = JSONObject(configMatcher.group(1))
+            val json = JSONObject(configMatcher.group(1)!!)
 
             val token = json.getString("token")
-            val server = json.getJSONArray("servers").getString(0)
+            val server = json.getJSONArray("servers").getString(0)!!
 
             val taskPattern = Pattern.compile("ilovepdfConfig\\.taskId\\s*=\\s*['\"]([^'\"]+)['\"]")
             val taskMatcher = taskPattern.matcher(html)
             if (!taskMatcher.find()) throw IOException("Could not find taskId")
-            val taskId = taskMatcher.group(1)
+            val taskId = taskMatcher.group(1)!!
 
             return UpscaleConfig(token = token, taskId = taskId, server = "https://$server.iloveimg.com/v1")
         }
