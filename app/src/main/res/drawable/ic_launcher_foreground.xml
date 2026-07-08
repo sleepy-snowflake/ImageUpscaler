@@ -5,28 +5,37 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!--
-        "U" glyph: left stem = 8-bit pixel staircase
-                   right stem = smooth vector curve
-    -->
+    <!-- Outer glow ring -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.08"
+        android:pathData="M 54,18 A 36,36 0 1,1 18,54 A 36,36 0 0,1 54,18 Z" />
+
+    <!-- Bold "U" letterform -->
     <path
         android:fillColor="#FFFFFF"
         android:pathData="
-            M 38,28
-            h 6 v 6
-            h -10 v 6
-            h 8 v 6
-            h -10 v 6
-            h 8 v 6
-            h -8 v 4
-            h 4
-            a 22,22 0 0,1 40,0
-            L 74,28
-            L 60,28
-            L 60,62
-            a 10,10 0 0,0 -18,0
-            L 42,62
-            Z
-        " />
+            M 36,32
+            h 8
+            v 28
+            a 10,10 0 0,0 20,0
+            v -28
+            h 8
+            v 32
+            a 18,18 0 0,1 -36,0
+            Z" />
 
+    <!-- Up-arrow accent inside the U -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.7"
+        android:pathData="
+            M 54,28
+            l -6,6
+            h 4
+            v 8
+            h 4
+            v -8
+            h 4
+            Z" />
 </vector>
