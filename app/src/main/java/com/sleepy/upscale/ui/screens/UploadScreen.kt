@@ -151,10 +151,7 @@ fun UploadScreen(
                     ) else Modifier
                 )
                 .clip(cardShape)
-                .then(
-                    if (isSelected) SpinningBorder(cardShape)
-                    else Modifier.background(TokyoSurfaceGlass)
-                )
+                .background(TokyoSurfaceGlass)
                 .then(
                     if (!isSelected) Modifier.border(
                         1.dp, TokyoBorder.copy(alpha = 0.5f), cardShape
@@ -167,6 +164,7 @@ fun UploadScreen(
             contentAlignment = Alignment.Center,
         ) {
             if (isSelected) {
+                SpinningBorderOverlay(cardShape)
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data((state as UpscaleState.ImageSelected).uri)
@@ -233,7 +231,7 @@ private fun BoxScope.UploadPlaceholder(pulse: Float) {
 }
 
 @Composable
-private fun SpinningBorder(shape: RoundedCornerShape) {
+private fun SpinningBorderOverlay(shape: RoundedCornerShape) {
     val transition = rememberInfiniteTransition(label = "spin_border")
     val rotation by transition.animateFloat(
         0f, 360f,
@@ -318,7 +316,7 @@ private fun ScaleToggle(selectedScale: Int, onScaleChange: (Int) -> Unit) {
         animationSpec = tween(400, easing = FastOutSlowInEasing),
         label = "indicator_offset"
     )
-    var width by remember { mutableFloatStateOf(0f) }
+    var toggleWidth by remember { mutableFloatStateOf(0f) }
     val containerShape = RoundedCornerShape(18.dp)
 
     Box(
@@ -328,13 +326,13 @@ private fun ScaleToggle(selectedScale: Int, onScaleChange: (Int) -> Unit) {
             .clip(containerShape)
             .background(TokyoSurface)
             .border(1.5.dp, TokyoBorder.copy(alpha = 0.6f), containerShape)
-            .onSizeChanged { width = it.width.toFloat() }
+            .onSizeChanged { toggleWidth = it.width.toFloat() }
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.5f)
                 .padding(5.dp)
-                .offset(x = with(density) { (indicatorFraction * width / 2f).toDp() })
+                .offset(x = with(density) { (indicatorFraction * toggleWidth / 2f).toDp() })
                 .shadow(8.dp, RoundedCornerShape(13.dp),
                     ambientColor = TokyoPrimary.copy(alpha = 0.4f),
                     spotColor = TokyoAccent.copy(alpha = 0.3f))
