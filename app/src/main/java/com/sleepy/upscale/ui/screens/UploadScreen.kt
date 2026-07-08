@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -57,6 +56,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -147,16 +147,14 @@ fun UploadScreen(
                 .aspectRatio(1f)
                 .then(
                     if (isSelected) Modifier.shadow(
-                        24.dp, cardShape,
+                        32.dp, cardShape,
                         ambientColor = TokyoGlow, spotColor = TokyoGlow
                     ) else Modifier
                 )
                 .clip(cardShape)
                 .background(TokyoSurfaceGlass)
-                .then(
-                    if (!isSelected) Modifier.border(
-                        1.dp, TokyoBorder.copy(alpha = 0.5f), cardShape
-                    ) else Modifier
+                .border(
+                    1.dp, TokyoBorder.copy(alpha = 0.3f), cardShape
                 )
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
@@ -181,7 +179,7 @@ fun UploadScreen(
             }
         }
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(10.dp))
 
         AnimatedVisibility(
             visible = isSelected,
@@ -190,9 +188,26 @@ fun UploadScreen(
         ) {
             val selected = state as? UpscaleState.ImageSelected
             if (selected != null) {
-                Text(selected.fileName, fontSize = 13.sp, color = TokyoText, maxLines = 1)
-                Text(formatSize(selected.fileSize), fontSize = 12.sp, color = TokyoTextMuted,
-                    modifier = Modifier.padding(top = 2.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        selected.fileName,
+                        fontSize = 13.sp,
+                        color = TokyoText,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        formatSize(selected.fileSize),
+                        fontSize = 12.sp,
+                        color = TokyoTextMuted,
+                    )
+                }
             }
         }
 
@@ -281,15 +296,14 @@ private fun PressableButton(
             .height(56.dp)
             .scale(scale)
             .then(
-                if (enabled) Modifier.shadow(12.dp, shape,
+                if (enabled) Modifier.shadow(16.dp, shape,
                     ambientColor = TokyoGlow, spotColor = TokyoGlow)
                 else Modifier
             )
             .clip(shape)
             .then(
-                if (enabled) Modifier.background(
-                    Brush.horizontalGradient(listOf(TokyoPrimary, TokyoAccent, TokyoSecondary))
-                ) else Modifier.background(TokyoSurfaceElevated)
+                if (enabled) Modifier.background(TokyoPrimary)
+                else Modifier.background(TokyoSurfaceElevated)
             )
             .clickable(
                 enabled = enabled,
@@ -333,14 +347,15 @@ private fun ScaleToggle(selectedScale: Int, onScaleChange: (Int) -> Unit) {
             modifier = Modifier
                 .fillMaxWidth(0.5f)
                 .padding(5.dp)
-                .offset(x = with(density) { (indicatorFraction * toggleWidth / 2f).toDp() })
-                .shadow(8.dp, RoundedCornerShape(13.dp),
-                    ambientColor = TokyoPrimary.copy(alpha = 0.4f),
-                    spotColor = TokyoAccent.copy(alpha = 0.3f))
-                .clip(RoundedCornerShape(13.dp))
-                .background(
-                    Brush.horizontalGradient(listOf(TokyoPrimary, TokyoAccent))
+                .offset(
+                    x = with(density) {
+                        (indicatorFraction * (toggleWidth - 2 * 5.dp.toPx()) / 2f).toDp()
+                    }
                 )
+                .shadow(8.dp, RoundedCornerShape(13.dp),
+                    ambientColor = TokyoGlow, spotColor = TokyoGlow)
+                .clip(RoundedCornerShape(13.dp))
+                .background(TokyoPrimary)
         )
 
         Row(Modifier.fillMaxSize()) {

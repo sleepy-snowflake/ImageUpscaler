@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="tokyo_bg">#1A1B2E</color>
-    <color name="tokyo_surface">#24283B</color>
-    <color name="tokyo_surface_elevated">#2A2E45</color>
-    <color name="tokyo_primary">#7DCFFF</color>
-    <color name="tokyo_on_primary">#1A1B2E</color>
-    <color name="tokyo_secondary">#BB9AF7</color>
-    <color name="tokyo_error">#F7768E</color>
-    <color name="tokyo_text">#C0CAF5</color>
+    <color name="tokyo_bg">#000000</color>
+    <color name="tokyo_surface">#1C1C1E</color>
+    <color name="tokyo_surface_elevated">#2C2C2E</color>
+    <color name="tokyo_primary">#E5E5EA</color>
+    <color name="tokyo_on_primary">#000000</color>
+    <color name="tokyo_secondary">#98989D</color>
+    <color name="tokyo_error">#FF453A</color>
+    <color name="tokyo_text">#FFFFFF</color>
     <color name="tokyo_text_bright">#FFFFFF</color>
-    <color name="tokyo_text_muted">#565F89</color>
-    <color name="tokyo_text_disabled">#3B4261</color>
-    <color name="tokyo_accent">#7AA2F7</color>
-    <color name="tokyo_warning">#E0AF68</color>
-    <color name="tokyo_border">#2F3350</color>
+    <color name="tokyo_text_muted">#8E8E93</color>
+    <color name="tokyo_text_disabled">#48484A</color>
+    <color name="tokyo_accent">#D1D1D6</color>
+    <color name="tokyo_warning">#FF9F0A</color>
+    <color name="tokyo_border">#38383A</color>
 </resources>

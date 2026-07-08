@@ -53,11 +53,13 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.sleepy.upscale.UpscaleState
 import com.sleepy.upscale.ui.theme.TokyoAccent
+import com.sleepy.upscale.ui.theme.TokyoBorder
 import com.sleepy.upscale.ui.theme.TokyoGlow
 import com.sleepy.upscale.ui.theme.TokyoOnPrimary
 import com.sleepy.upscale.ui.theme.TokyoPrimary
@@ -130,12 +132,10 @@ fun DownloadScreen(
                         .size(40.dp)
                         .scale(checkScale)
                         .clip(RoundedCornerShape(10.dp))
-                        .background(
-                            Brush.horizontalGradient(listOf(TokyoPrimary, TokyoAccent))
-                        ),
+                        .background(TokyoPrimary),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text("✓", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = TokyoOnPrimary)
+                    Text("\u2713", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = TokyoOnPrimary)
                 }
                 Spacer(Modifier.width(16.dp))
                 Column {
@@ -162,7 +162,7 @@ fun DownloadScreen(
                         spotColor = TokyoGlow.copy(alpha = glowPulse * 0.5f))
                     .clip(RoundedCornerShape(20.dp))
                     .background(TokyoSurfaceGlass)
-                    .border(1.5.dp, TokyoGlow.copy(alpha = glowPulse), RoundedCornerShape(20.dp))
+                    .border(1.dp, TokyoBorder.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
             ) {
                 AsyncImage(
                     model = currentBytes,
@@ -178,9 +178,12 @@ fun DownloadScreen(
                 modifier = Modifier.fillMaxWidth().alpha(contentAlpha)
                     .graphicsLayer { translationY = (contentAlpha * 20f - 20f) },
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(currentName, fontSize = 13.sp, color = TokyoText, maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f))
+                Spacer(Modifier.width(8.dp))
                 Text(formatSize(currentSize), fontSize = 12.sp, color = TokyoTextMuted)
             }
 
@@ -323,15 +326,14 @@ private fun SaveButton(
             .scale(scale)
             .alpha(if (enabled) 1f else 0.5f)
             .then(
-                if (enabled) Modifier.shadow(12.dp, shape,
+                if (enabled) Modifier.shadow(16.dp, shape,
                     ambientColor = TokyoGlow, spotColor = TokyoGlow)
                 else Modifier
             )
             .clip(shape)
             .then(
-                if (enabled) Modifier.background(
-                    Brush.horizontalGradient(listOf(TokyoPrimary, TokyoAccent))
-                ) else Modifier.background(TokyoSurfaceElevated)
+                if (enabled) Modifier.background(TokyoPrimary)
+                else Modifier.background(TokyoSurfaceElevated)
             )
             .clickable(
                 enabled = enabled,

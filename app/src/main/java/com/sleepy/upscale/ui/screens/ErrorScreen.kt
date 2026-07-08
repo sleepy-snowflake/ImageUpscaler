@@ -29,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -38,13 +37,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sleepy.upscale.UpscaleState
-import com.sleepy.upscale.ui.theme.TokyoAccent
 import com.sleepy.upscale.ui.theme.TokyoBg
 import com.sleepy.upscale.ui.theme.TokyoError
 import com.sleepy.upscale.ui.theme.TokyoGlow
 import com.sleepy.upscale.ui.theme.TokyoOnPrimary
 import com.sleepy.upscale.ui.theme.TokyoPrimary
-import com.sleepy.upscale.ui.theme.TokyoSecondary
 import com.sleepy.upscale.ui.theme.TokyoTextBright
 import com.sleepy.upscale.ui.theme.TokyoTextMuted
 import kotlinx.coroutines.delay
@@ -124,12 +121,10 @@ fun ErrorScreen(
             modifier = Modifier
                 .fillMaxWidth().height(56.dp)
                 .scale(btnScale)
-                .shadow(12.dp, shape,
+                .shadow(16.dp, shape,
                     ambientColor = TokyoGlow, spotColor = TokyoGlow)
                 .clip(shape)
-                .background(
-                    Brush.horizontalGradient(listOf(TokyoPrimary, TokyoAccent, TokyoSecondary))
-                )
+                .background(TokyoPrimary)
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null,
