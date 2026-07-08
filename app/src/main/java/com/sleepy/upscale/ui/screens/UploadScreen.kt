@@ -16,6 +16,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,7 +33,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,14 +43,14 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -67,7 +70,6 @@ import com.sleepy.upscale.ui.theme.TokyoSurfaceGlass
 import com.sleepy.upscale.ui.theme.TokyoText
 import com.sleepy.upscale.ui.theme.TokyoTextBright
 import com.sleepy.upscale.ui.theme.TokyoTextMuted
-import kotlin.math.roundToInt
 
 @Composable
 fun UploadScreen(
@@ -168,24 +170,8 @@ fun UploadScreen(
                 )
             }
 
-            AnimatedVisibility(
-                visible = !isSelected,
-                enter = fadeIn(), exit = fadeOut(),
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Box(
-                        modifier = Modifier
-                            .size(64.dp)
-                            .scale(pulse)
-                            .clip(CircleShape)
-                            .background(TokyoSurfaceElevated),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text("+", fontSize = 28.sp, color = TokyoTextMuted)
-                    }
-                    Spacer(Modifier.height(12.dp))
-                    Text("Tap to select an image", fontSize = 13.sp, color = TokyoTextMuted)
-                }
+            if (!isSelected) {
+                UploadPlaceholder(pulse = pulse)
             }
         }
 
@@ -208,17 +194,21 @@ fun UploadScreen(
         ScaleToggle(selectedScale, onScaleChange)
         Spacer(Modifier.height(16.dp))
 
+        val shape = RoundedCornerShape(16.dp)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .shadow(if (isSelected) 12.dp else 0.dp, RoundedCornerShape(16.dp),
-                    ambientColor = TokyoGlow, spotColor = TokyoGlow)
-                .clip(RoundedCornerShape(16.dp))
-                .background(
-                    if (isSelected) Brush.horizontalGradient(
-                        listOf(TokyoPrimary, TokyoAccent, TokyoSecondary)
-                    ) else TokyoSurfaceElevated
+                .then(
+                    if (isSelected) Modifier.shadow(12.dp, shape,
+                        ambientColor = TokyoGlow, spotColor = TokyoGlow)
+                    else Modifier
+                )
+                .clip(shape)
+                .then(
+                    if (isSelected) Modifier.background(
+                        Brush.horizontalGradient(listOf(TokyoPrimary, TokyoAccent, TokyoSecondary))
+                    ) else Modifier.background(TokyoSurfaceElevated)
                 )
                 .clickable(
                     enabled = isSelected,
@@ -243,12 +233,32 @@ fun UploadScreen(
 }
 
 @Composable
+private fun BoxScope.UploadPlaceholder(pulse: Float) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier = Modifier
+                .size(64.dp)
+                .scale(pulse)
+                .clip(CircleShape)
+                .background(TokyoSurfaceElevated),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text("+", fontSize = 28.sp, color = TokyoTextMuted)
+        }
+        Spacer(Modifier.height(12.dp))
+        Text("Tap to select an image", fontSize = 13.sp, color = TokyoTextMuted)
+    }
+}
+
+@Composable
 private fun ScaleToggle(selectedScale: Int, onScaleChange: (Int) -> Unit) {
     val haptic = LocalHapticFeedback.current
-    val indicatorOffset by animateFloatAsState(
+    val density = LocalDensity.current
+    val indicatorFraction by animateFloatAsState(
         targetValue = if (selectedScale == 2) 0f else 1f,
         animationSpec = tween(350), label = "indicator_offset"
     )
+    var width by remember { mutableFloatStateOf(0f) }
 
     Box(
         modifier = Modifier
@@ -256,12 +266,13 @@ private fun ScaleToggle(selectedScale: Int, onScaleChange: (Int) -> Unit) {
             .height(52.dp)
             .clip(RoundedCornerShape(14.dp))
             .background(TokyoSurfaceElevated)
+            .onSizeChanged { width = it.width.toFloat() }
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.5f)
                 .padding(4.dp)
-                .offset { IntOffset((indicatorOffset * size.width).roundToInt(), 0) }
+                .offset(x = with(density) { (indicatorFraction * width / 2f).toDp() })
                 .clip(RoundedCornerShape(10.dp))
                 .background(
                     Brush.horizontalGradient(
@@ -271,7 +282,7 @@ private fun ScaleToggle(selectedScale: Int, onScaleChange: (Int) -> Unit) {
         )
 
         Row(Modifier.fillMaxSize()) {
-            listOf(2, 4).forEachIndexed { index, scale ->
+            listOf(2, 4).forEachIndexed { _, scale ->
                 Box(
                     modifier = Modifier
                         .weight(1f).fillMaxSize()

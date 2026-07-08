@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
@@ -49,9 +47,9 @@ import com.sleepy.upscale.ui.theme.TokyoSurface
 import com.sleepy.upscale.ui.theme.TokyoSurfaceElevated
 import com.sleepy.upscale.ui.theme.TokyoTextBright
 import com.sleepy.upscale.ui.theme.TokyoTextMuted
+import kotlinx.coroutines.delay
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlinx.coroutines.delay
 
 @Composable
 fun ProcessingScreen(state: UpscaleState.Processing) {
@@ -75,12 +73,11 @@ fun ProcessingScreen(state: UpscaleState.Processing) {
         label = "sweep"
     )
 
-    val dotCount by remember { mutableIntStateOf(3) }
     var dotIndex by remember { mutableIntStateOf(0) }
     LaunchedEffect(Unit) {
         while (true) {
             delay(500)
-            dotIndex = (dotIndex + 1) % (dotCount + 1)
+            dotIndex = (dotIndex + 1) % 4
         }
     }
 
@@ -88,8 +85,7 @@ fun ProcessingScreen(state: UpscaleState.Processing) {
 
     val animProgress by animateFloatAsState(
         targetValue = state.progress,
-        animationSpec = tween(300),
-        label = "progress_smooth"
+        animationSpec = tween(300), label = "progress_smooth"
     )
 
     Column(
@@ -129,7 +125,7 @@ fun ProcessingScreen(state: UpscaleState.Processing) {
                 val strokeWidth = 6.dp.toPx()
                 val radius = (size.minDimension - strokeWidth) / 2
                 val center = Offset(size.width / 2, size.height / 2)
-                val top = 1f - sweepProgress
+                val sweep = sweepProgress.coerceIn(0.05f, 0.95f)
 
                 drawArc(
                     brush = Brush.sweepGradient(
@@ -137,7 +133,7 @@ fun ProcessingScreen(state: UpscaleState.Processing) {
                         center = center,
                     ),
                     startAngle = rotation,
-                    sweepAngle = 360f * sweepProgress.coerceIn(0.05f, 0.95f),
+                    sweepAngle = 360f * sweep,
                     useCenter = false,
                     topLeft = Offset(center.x - radius, center.y - radius),
                     size = Size(radius * 2, radius * 2),
@@ -146,8 +142,8 @@ fun ProcessingScreen(state: UpscaleState.Processing) {
 
                 drawArc(
                     color = TokyoSurfaceElevated,
-                    startAngle = rotation + 360f * sweepProgress.coerceIn(0.05f, 0.95f),
-                    sweepAngle = 360f - 360f * sweepProgress.coerceIn(0.05f, 0.95f),
+                    startAngle = rotation + 360f * sweep,
+                    sweepAngle = 360f - 360f * sweep,
                     useCenter = false,
                     topLeft = Offset(center.x - radius, center.y - radius),
                     size = Size(radius * 2, radius * 2),
@@ -157,9 +153,10 @@ fun ProcessingScreen(state: UpscaleState.Processing) {
                 for (i in 0 until 6) {
                     val angle = rotation + i * 60f
                     val r = radius * 0.7f
-                    val px = center.x + r * cos(Math.toRadians(angle.toDouble())).toFloat()
-                    val py = center.y + r * sin(Math.toRadians(angle.toDouble())).toFloat()
-                    val alpha = (sin(Math.toRadians((angle + rotation).toDouble())).toFloat() + 1f) / 2f
+                    val radians = Math.toRadians(angle.toDouble())
+                    val px = center.x + r * cos(radians).toFloat()
+                    val py = center.y + r * sin(radians).toFloat()
+                    val alpha = (sin(radians + rotation.toDouble()).toFloat() + 1f) / 2f
                     drawCircle(
                         color = TokyoPrimary.copy(alpha = alpha * 0.4f),
                         radius = 3.dp.toPx(),
@@ -183,8 +180,8 @@ fun ProcessingScreen(state: UpscaleState.Processing) {
         LinearProgressIndicator(
             progress = { animProgress },
             modifier = Modifier.fillMaxWidth().height(4.dp),
+            color = TokyoPrimary,
             trackColor = TokyoSurfaceElevated,
-            indicatorColor = Brush.horizontalGradient(listOf(TokyoPrimary, TokyoAccent)),
             strokeCap = StrokeCap.Round,
         )
 

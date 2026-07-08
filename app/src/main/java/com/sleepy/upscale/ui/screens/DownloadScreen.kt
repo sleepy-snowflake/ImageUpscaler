@@ -39,7 +39,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -54,7 +53,6 @@ import com.sleepy.upscale.ui.theme.TokyoAccent
 import com.sleepy.upscale.ui.theme.TokyoGlow
 import com.sleepy.upscale.ui.theme.TokyoOnPrimary
 import com.sleepy.upscale.ui.theme.TokyoPrimary
-import com.sleepy.upscale.ui.theme.TokyoSecondary
 import com.sleepy.upscale.ui.theme.TokyoSurface
 import com.sleepy.upscale.ui.theme.TokyoSurfaceElevated
 import com.sleepy.upscale.ui.theme.TokyoSurfaceGlass
@@ -185,8 +183,8 @@ fun DownloadScreen(
                 LinearProgressIndicator(
                     progress = { downloadProgress },
                     modifier = Modifier.fillMaxWidth().height(4.dp),
+                    color = TokyoPrimary,
                     trackColor = TokyoSurfaceElevated,
-                    indicatorColor = Brush.horizontalGradient(listOf(TokyoPrimary, TokyoAccent)),
                     strokeCap = StrokeCap.Round,
                 )
                 Spacer(Modifier.height(4.dp))
@@ -199,16 +197,21 @@ fun DownloadScreen(
 
         Spacer(Modifier.height(16.dp))
 
+        val saveShape = RoundedCornerShape(16.dp)
         Box(
             modifier = Modifier
                 .fillMaxWidth().height(56.dp)
                 .alpha(if (isCompleted) 1f else 0.5f)
-                .shadow(if (isCompleted) 12.dp else 0.dp, RoundedCornerShape(16.dp),
-                    ambientColor = TokyoGlow, spotColor = TokyoGlow)
-                .clip(RoundedCornerShape(16.dp))
-                .background(
-                    if (isCompleted) Brush.horizontalGradient(listOf(TokyoPrimary, TokyoAccent))
-                    else TokyoSurfaceElevated
+                .then(
+                    if (isCompleted) Modifier.shadow(12.dp, saveShape,
+                        ambientColor = TokyoGlow, spotColor = TokyoGlow)
+                    else Modifier
+                )
+                .clip(saveShape)
+                .then(
+                    if (isCompleted) Modifier.background(
+                        Brush.horizontalGradient(listOf(TokyoPrimary, TokyoAccent))
+                    ) else Modifier.background(TokyoSurfaceElevated)
                 )
                 .clickable(
                     enabled = isCompleted,
@@ -227,34 +230,24 @@ fun DownloadScreen(
             )
         }
 
-        TextButton(
-            onClick = {
-                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                onClearClick()
-            },
-            modifier = Modifier.fillMaxWidth().height(52.dp).alpha(contentAlpha),
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth().height(52.dp)
+                .alpha(contentAlpha)
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                ) {
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    onClearClick()
+                },
+            contentAlignment = Alignment.Center,
+        ) {
+            Text("Clear", fontSize = 15.sp, color = TokyoTextMuted)
+        }
 
         Spacer(Modifier.height(8.dp))
-    }
-}
-
-@Composable
-private fun TextButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick,
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text("Clear", fontSize = 15.sp, color = TokyoTextMuted)
     }
 }
 
