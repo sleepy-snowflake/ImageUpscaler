@@ -15,6 +15,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -256,33 +257,37 @@ private fun ScaleToggle(selectedScale: Int, onScaleChange: (Int) -> Unit) {
     val density = LocalDensity.current
     val indicatorFraction by animateFloatAsState(
         targetValue = if (selectedScale == 2) 0f else 1f,
-        animationSpec = tween(350), label = "indicator_offset"
+        animationSpec = tween(400, easing = androidx.compose.animation.core.FastOutSlowInEasing),
+        label = "indicator_offset"
     )
     var width by remember { mutableFloatStateOf(0f) }
+    val containerShape = RoundedCornerShape(18.dp)
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(52.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(TokyoSurfaceElevated)
+            .height(60.dp)
+            .clip(containerShape)
+            .background(TokyoSurface)
+            .border(1.5.dp, TokyoBorder.copy(alpha = 0.6f), containerShape)
             .onSizeChanged { width = it.width.toFloat() }
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.5f)
-                .padding(4.dp)
+                .padding(5.dp)
                 .offset(x = with(density) { (indicatorFraction * width / 2f).toDp() })
-                .clip(RoundedCornerShape(10.dp))
+                .shadow(8.dp, RoundedCornerShape(13.dp),
+                    ambientColor = TokyoPrimary.copy(alpha = 0.4f),
+                    spotColor = TokyoAccent.copy(alpha = 0.3f))
+                .clip(RoundedCornerShape(13.dp))
                 .background(
-                    Brush.horizontalGradient(
-                        listOf(TokyoPrimary.copy(alpha = 0.2f), TokyoAccent.copy(alpha = 0.2f))
-                    )
+                    Brush.horizontalGradient(listOf(TokyoPrimary, TokyoAccent))
                 )
         )
 
         Row(Modifier.fillMaxSize()) {
-            listOf(2, 4).forEachIndexed { _, scale ->
+            listOf(2, 4).forEachIndexed { index, scale ->
                 Box(
                     modifier = Modifier
                         .weight(1f).fillMaxSize()
@@ -295,12 +300,27 @@ private fun ScaleToggle(selectedScale: Int, onScaleChange: (Int) -> Unit) {
                         },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(
-                        text = "${scale}x",
-                        fontSize = 17.sp,
-                        fontWeight = if (selectedScale == scale) FontWeight.Bold else FontWeight.Medium,
-                        color = if (selectedScale == scale) TokyoTextBright else TokyoTextMuted,
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Text(
+                            text = "${scale}x",
+                            fontSize = if (selectedScale == scale) 22.sp else 16.sp,
+                            fontWeight = if (selectedScale == scale) FontWeight.Black else FontWeight.Medium,
+                            color = if (selectedScale == scale) TokyoOnPrimary else TokyoTextMuted,
+                            letterSpacing = 0.5.sp,
+                        )
+                        if (selectedScale == scale) {
+                            Spacer(Modifier.width(6.dp))
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(TokyoOnPrimary.copy(alpha = 0.7f))
+                            )
+                        }
+                    }
                 }
             }
         }
