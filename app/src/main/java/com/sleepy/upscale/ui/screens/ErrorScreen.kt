@@ -1,10 +1,12 @@
 package com.sleepy.upscale.ui.screens
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,7 +30,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -110,22 +111,33 @@ fun ErrorScreen(
 
         Spacer(Modifier.height(40.dp))
 
+        val interactionSource = remember { MutableInteractionSource() }
+        val isPressed by interactionSource.collectIsPressedAsState()
+        val btnScale by animateFloatAsState(
+            targetValue = if (isPressed) 0.96f else 1f,
+            animationSpec = spring(dampingRatio = 0.5f, stiffness = 800f),
+            label = "btn_scale"
+        )
+        val shape = RoundedCornerShape(16.dp)
+
         Box(
             modifier = Modifier
                 .fillMaxWidth().height(56.dp)
-                .shadow(12.dp, RoundedCornerShape(16.dp),
+                .scale(btnScale)
+                .shadow(12.dp, shape,
                     ambientColor = TokyoGlow, spotColor = TokyoGlow)
-                .clip(RoundedCornerShape(16.dp))
+                .clip(shape)
                 .background(
                     Brush.horizontalGradient(listOf(TokyoPrimary, TokyoAccent, TokyoSecondary))
                 )
                 .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
+                    interactionSource = interactionSource,
                     indication = null,
-                ) {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onRetryClick()
-                },
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onRetryClick()
+                    },
+                ),
             contentAlignment = Alignment.Center,
         ) {
             Text(

@@ -1,11 +1,13 @@
 package com.sleepy.upscale.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
@@ -15,6 +17,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -44,6 +47,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
@@ -134,6 +138,7 @@ fun UploadScreen(
 
         Spacer(Modifier.height(28.dp))
 
+        val cardShape = RoundedCornerShape(20.dp)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -141,18 +146,19 @@ fun UploadScreen(
                 .aspectRatio(1f)
                 .then(
                     if (isSelected) Modifier.shadow(
-                        24.dp, RoundedCornerShape(20.dp),
+                        24.dp, cardShape,
                         ambientColor = TokyoGlow, spotColor = TokyoGlow
                     ) else Modifier
                 )
-                .clip(RoundedCornerShape(20.dp))
-                .background(TokyoSurfaceGlass)
+                .clip(cardShape)
                 .then(
-                    if (isSelected) Modifier.border(
-                        1.5.dp, TokyoGlow.copy(alpha = glowAlpha), RoundedCornerShape(20.dp)
-                    ) else Modifier.border(
-                        1.dp, TokyoBorder.copy(alpha = 0.5f), RoundedCornerShape(20.dp)
-                    )
+                    if (isSelected) SpinningBorder(cardShape)
+                    else Modifier.background(TokyoSurfaceGlass)
+                )
+                .then(
+                    if (!isSelected) Modifier.border(
+                        1.dp, TokyoBorder.copy(alpha = 0.5f), cardShape
+                    ) else Modifier
                 )
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
@@ -195,39 +201,14 @@ fun UploadScreen(
         ScaleToggle(selectedScale, onScaleChange)
         Spacer(Modifier.height(16.dp))
 
-        val shape = RoundedCornerShape(16.dp)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .then(
-                    if (isSelected) Modifier.shadow(12.dp, shape,
-                        ambientColor = TokyoGlow, spotColor = TokyoGlow)
-                    else Modifier
-                )
-                .clip(shape)
-                .then(
-                    if (isSelected) Modifier.background(
-                        Brush.horizontalGradient(listOf(TokyoPrimary, TokyoAccent, TokyoSecondary))
-                    ) else Modifier.background(TokyoSurfaceElevated)
-                )
-                .clickable(
-                    enabled = isSelected,
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                ) {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onUpscaleClick()
-                },
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = "Upscale",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = if (isSelected) TokyoOnPrimary else TokyoTextMuted,
-            )
-        }
+        PressableButton(
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                onUpscaleClick()
+            },
+            enabled = isSelected,
+            text = "Upscale",
+        )
 
         Spacer(Modifier.height(24.dp))
     }
@@ -252,12 +233,89 @@ private fun BoxScope.UploadPlaceholder(pulse: Float) {
 }
 
 @Composable
+private fun SpinningBorder(shape: RoundedCornerShape) {
+    val transition = rememberInfiniteTransition(label = "spin_border")
+    val rotation by transition.animateFloat(
+        0f, 360f,
+        infiniteRepeatable(tween(4000, easing = LinearEasing), RepeatMode.Restart),
+        label = "spin"
+    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .graphicsLayer { rotationZ = rotation }
+            .background(
+                Brush.sweepGradient(
+                    colors = listOf(
+                        TokyoPrimary,
+                        TokyoAccent,
+                        TokyoSecondary,
+                        TokyoPrimary,
+                    )
+                ),
+                shape,
+            )
+            .padding(2.dp)
+            .clip(shape)
+            .background(TokyoSurfaceGlass)
+    )
+}
+
+@Composable
+private fun PressableButton(
+    onClick: () -> Unit,
+    enabled: Boolean,
+    text: String,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed && enabled) 0.96f else 1f,
+        animationSpec = spring(dampingRatio = 0.5f, stiffness = 800f),
+        label = "btn_scale"
+    )
+
+    val shape = RoundedCornerShape(16.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .scale(scale)
+            .then(
+                if (enabled) Modifier.shadow(12.dp, shape,
+                    ambientColor = TokyoGlow, spotColor = TokyoGlow)
+                else Modifier
+            )
+            .clip(shape)
+            .then(
+                if (enabled) Modifier.background(
+                    Brush.horizontalGradient(listOf(TokyoPrimary, TokyoAccent, TokyoSecondary))
+                ) else Modifier.background(TokyoSurfaceElevated)
+            )
+            .clickable(
+                enabled = enabled,
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick,
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text,
+            fontSize = 17.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = if (enabled) TokyoOnPrimary else TokyoTextMuted,
+        )
+    }
+}
+
+@Composable
 private fun ScaleToggle(selectedScale: Int, onScaleChange: (Int) -> Unit) {
     val haptic = LocalHapticFeedback.current
     val density = LocalDensity.current
     val indicatorFraction by animateFloatAsState(
         targetValue = if (selectedScale == 2) 0f else 1f,
-        animationSpec = tween(400, easing = androidx.compose.animation.core.FastOutSlowInEasing),
+        animationSpec = tween(400, easing = FastOutSlowInEasing),
         label = "indicator_offset"
     )
     var width by remember { mutableFloatStateOf(0f) }
@@ -287,7 +345,7 @@ private fun ScaleToggle(selectedScale: Int, onScaleChange: (Int) -> Unit) {
         )
 
         Row(Modifier.fillMaxSize()) {
-            listOf(2, 4).forEachIndexed { index, scale ->
+            listOf(2, 4).forEachIndexed { _, scale ->
                 Box(
                     modifier = Modifier
                         .weight(1f).fillMaxSize()
